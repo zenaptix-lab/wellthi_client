@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,render_template,helpers,send_from_directory,make_response
+from flask import Flask, request, jsonify,render_template,helpers,send_from_directory,make_response, session
 from flask_bootstrap import Bootstrap
 import requests
 import json
@@ -43,10 +43,24 @@ def jsonSend ():
 def getResource(resource_name):
     return send_from_directory('static',resource_name)
 
-@app.route('/index')
+@app.route('/index',methods=['POST','GET'])
 def indexPage():
+    error = None
     headers = {'Content-Type': 'text/html'}
-    return make_response(render_template('bootstrap_index.html'),200,headers)
+    if request.method == 'GET' : # load /index page
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('bootstrap_index.html'),200,headers)
+
+    else:
+        # if auth(request.form['Email'],request.form['Password']) == True:
+        #     session['username'] = request.form['Email'] #assign session to user
+        # username = request.form['IBM_username']
+        # password = request.form['IBM_password']
+        # print("this is the username ", username)
+        # print ("password : ", password)
+        print("hello there i made a post")
+        print(request.form)
+        return make_response(render_template('bootstrap_index.html'),200,headers)
 
 
 if __name__ == '__main__':

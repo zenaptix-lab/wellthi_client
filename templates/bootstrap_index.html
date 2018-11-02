@@ -9,7 +9,7 @@
         <meta name="author" content="">
         <link rel="icon" href="../../favicon.ico">
 
-        <title>Crafts Homepage</title>
+        <title>Client App Homepage</title>
 
         <!-- Bootstrap core CSS -->
         <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,26 +18,24 @@
 
     <body>
         <div class="container">
-            <form>
+            <form action="/index"  method="post" target="_parent">
                 <div class="form-group">
                     <label>IBM cloud username</label>
                     <input type="text" class="form-control" id="IBM_username" placeholder="username">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="IBM_password" placeholder="Password">
                 </div>
                 <div class="form-group">
                     <h2>User input</h2>
                     <p>The form below contains a textarea for the chat bot user input</p>
-                    <form>
-                        <div class="form-group">
-                            <label>User chat:</label>
-                            <textarea class="form-control" rows="5" id="user_input"></textarea>
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label>User chat:</label>
+                        <textarea class="form-control" rows="5" id="user_input"></textarea>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <input type="submit" class="btn btn-primary" value="Submit">
             </form>
         </div>
 
@@ -49,6 +47,24 @@
                     <label for="comment">Comment:</label>
                     <textarea class="form-control" rows="5" id="comment" readonly="readonly"></textarea>
                 </div>
+            </form>
+        </div>
+
+        <div class="container">
+            <h2>Vertical (basic) form</h2>
+            <form action="/action_page.php">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="remember"> Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </div>
 
