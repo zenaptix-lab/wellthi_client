@@ -1,26 +1,37 @@
 __author__ = 'rikus'
 import requests
 import json
+import watson_developer_cloud
 
-class Message(object):
-    def __init__(self,message):
-        self.message = message
 
-class MessageHelpers(object):
-    def __init__(self):
-        pass
+class Watson_Config(object):
+    def __init__(self, username, password, version):
+        self.assistant = watson_developer_cloud.AssistantV1(
+            username=username, password=password, version=version
+        )
 
-    @classmethod
-    def post_message(self,url,json_message):
-        headers = {'content-type': 'application/json'}
-        r = requests.post(url, headers=headers, data=json.dumps(json_message))
-        return r.json()
+
+class MessageHelpers(Watson_Config):
+    def __init__(self, username, password, version):
+        Watson_Config.__init__(self, username, password, version)
+
+    # @classmethod
+    def post_message(self, workspace_id, message):
+        response = self.assistant.message(
+            workspace_id=workspace_id,
+            input={
+                'text': message
+            }
+        ).get_result()
+
+        return json.dumps(response, indent=2)
+
 
 class Greetings(object):
     def __init__(self):
         pass
 
-    def post_greeting(self,url):
+    def post_greeting(self, url):
         json_message = """{\"input\": {\"text\": \"I am stressed\"}}"""
-        response = MessageHelpers.post_message(url, json_message)
+        response = MessageHelpers.post_message(json_message)
         return response
