@@ -17,26 +17,33 @@
     </head>
 
     <body>
+
         <div class="container">
-            <form action="/index"  method="post" target="_parent">
-                <div class="form-group">
-                    <label>IBM cloud username</label>
-                    <input type="text" class="form-control" id="IBM_username" placeholder="username">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" class="form-control" id="IBM_password" placeholder="Password">
-                </div>
-                <div class="form-group">
-                    <h2>User input</h2>
-                    <p>The form below contains a textarea for the chat bot user input</p>
+            <div class="row">
+                <form action="/index" method="post">
                     <div class="form-group">
-                        <label>User chat:</label>
-                        <textarea class="form-control" rows="5" id="user_input"></textarea>
+                        <label for="IBM username">Username:</label>
+                        <input type="text" class="form-control" id="IBM_username" placeholder="username" name="username">
                     </div>
+                    <div class="form-group">
+                        <label for="IBM_password">Password:</label>
+                        <input type="password" class="form-control" id="IBM_password" placeholder="password" name="password">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col col-lg-2">
+                    <form action="/index" method="post">
+                        <textarea name="chat_bot_text"></textarea>
+                        <input type="submit">
+                    </form>
                 </div>
-                <input type="submit" class="btn btn-primary" value="Submit">
-            </form>
+            </div>
         </div>
 
         <div class="container">
@@ -47,24 +54,6 @@
                     <label for="comment">Comment:</label>
                     <textarea class="form-control" rows="5" id="comment" readonly="readonly"></textarea>
                 </div>
-            </form>
-        </div>
-
-        <div class="container">
-            <h2>Vertical (basic) form</h2>
-            <form action="/action_page.php">
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-                </div>
-                <div class="form-group">
-                    <label for="pwd">Password:</label>
-                    <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
-                </div>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="remember"> Remember me</label>
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </div>
 
