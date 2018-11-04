@@ -41,6 +41,8 @@ def jsonSend ():
     return r.json()
 
 
+
+
 @app.route('/static/<resource_name>')
 def getResource(resource_name):
     return send_from_directory('static',resource_name)
@@ -54,7 +56,7 @@ def indexPage():
         return make_response(render_template('bootstrap_index.html'),200,headers)
 
     else:
-        if(request.form.get('username')== True & request.form.get('password') == True):
+        if(request.form.get('username') and request.form.get('password')):
             username = request.form['username']
             password = request.form['password']
             cred = (username,password)
@@ -62,7 +64,6 @@ def indexPage():
         else:
             print("please enter a username and password")
             return make_response(render_template('bootstrap_index.html'),200,headers)
-
 
 if __name__ == '__main__':
     app.run()
