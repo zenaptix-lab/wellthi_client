@@ -23,8 +23,8 @@ class MessageHelpers(Watson_Config):
                 'text': message
             }
         ).get_result()
-
-        return json.dumps(response, indent=2)
+        # return json.dumps(response)
+        return response['output']['text'][0]
 
 
 class Greetings(object):
