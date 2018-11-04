@@ -54,7 +54,7 @@ def indexPage():
         return make_response(render_template('bootstrap_index.html'),200,headers)
 
     else:
-        if(request.form.get('username')): #& 'password' in request.form
+        if(request.form.get('username')== True & request.form.get('password') == True):
             username = request.form['username']
             password = request.form['password']
             cred = (username,password)
