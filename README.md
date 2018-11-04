@@ -11,6 +11,11 @@ To initialize python virtual environment run :
 $ virtualenv -p /usr/bin/python2.7 wellthi_client
 ```
 
+To activate virtual environment run :
+```
+$ source .../wellthi_client/bin/activate
+```
+
 Flask setup after init in virtual env :
 ```
 $ pip install Flask

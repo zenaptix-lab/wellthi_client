@@ -3,10 +3,12 @@ from flask_bootstrap import Bootstrap
 import requests
 import json
 from jinja2 import Template
+from Models.Credentials import *
 
 app = Flask(__name__)   # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
+cred = Credentials("","")
 
 print("Starting web server")
 
@@ -52,15 +54,14 @@ def indexPage():
         return make_response(render_template('bootstrap_index.html'),200,headers)
 
     else:
-        # if auth(request.form['Email'],request.form['Password']) == True:
-        #     session['username'] = request.form['Email'] #assign session to user
-        # username = request.form['IBM_username']
-        # password = request.form['IBM_password']
-        # print("this is the username ", username)
-        # print ("password : ", password)
-        print("hello there i made a post")
-        print(request.form)
-        return make_response(render_template('bootstrap_index.html'),200,headers)
+        if(request.form.get('username')): #& 'password' in request.form
+            username = request.form['username']
+            password = request.form['password']
+            cred = (username,password)
+            return make_response(render_template('bootstrap_index.html'),200,headers)
+        else:
+            print("please enter a username and password")
+            return make_response(render_template('bootstrap_index.html'),200,headers)
 
 
 if __name__ == '__main__':
