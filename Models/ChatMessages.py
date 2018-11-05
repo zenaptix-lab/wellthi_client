@@ -30,7 +30,7 @@ class MessageHelpers(Watson_Config):
             context=self.chat_context
         ).get_result()
         self.chat_context = response['context']
-        # return response['context']
+        #return response['context']
         #return json.dumps(response,indent=2)
         return response['output']['text'][0]
 
