@@ -10,6 +10,7 @@ app = Flask(__name__)  # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
+chat_server = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48","FUWYZmMJmjGF",'2018-09-20')
 
 print("Starting web server")
 
@@ -68,10 +69,8 @@ def indexPage():
                 return make_response(render_template('bootstrap_index.html'), 200, headers)
             else:  # post message
                 message = request.form['chat_bot_text']
-                response = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48", "FUWYZmMJmjGF",
-                                          '2018-09-20').post_message('953d25b4-9170-47e5-b465-fc513f60ce1d',message )
+                response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d',message)
                 return make_response(render_template('bootstrap_index.html', chat_message=response), 200, headers)
-
 
 if __name__ == '__main__':
     app.run()

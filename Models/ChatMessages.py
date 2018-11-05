@@ -9,11 +9,13 @@ class Watson_Config(object):
         self.assistant = watson_developer_cloud.AssistantV1(
             username=username, password=password, version=version
         )
+        self.chat_context = """{}"""
 
 
 class MessageHelpers(Watson_Config):
     def __init__(self, username, password, version):
         Watson_Config.__init__(self, username, password, version)
+
 
     # @classmethod
     def post_message(self, workspace_id, message):
@@ -22,8 +24,11 @@ class MessageHelpers(Watson_Config):
             workspace_id=workspace_id,
             input={
                 'text': formatted_msg
-            }
+            },
+            context=self.chat_context
         ).get_result()
+        self.chat_context = response['context']
+        # return response['context']
         #return json.dumps(response,indent=2)
         return response['output']['text'][0]
 
