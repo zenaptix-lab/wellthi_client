@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, helpers, send_from_directory, make_response, session
+from flask import Flask, request, jsonify, render_template, helpers, send_from_directory, make_response, session,Response
 from flask_bootstrap import Bootstrap
 import requests
 import json
@@ -10,7 +10,8 @@ app = Flask(__name__)  # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
-chat_server = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48","FUWYZmMJmjGF",'2018-09-20')
+chat_server_version = '2018-09-20'
+chat_server = MessageHelpers(cred.username,cred.password,chat_server_version)
 
 print("Starting web server")
 
@@ -48,6 +49,10 @@ def jsonSend():
 def getResource(resource_name):
     return send_from_directory('static', resource_name)
 
+@app.route('/wellthi_break')
+def wellthi_break():
+    headers = {'Content-Type': 'text/html'}
+    return make_response(render_template('wellthi_break.html'), 200, headers)
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
@@ -62,6 +67,7 @@ def indexPage():
             username = request.form['username']
             password = request.form['password']
             cred.update(username, password)
+            chat_server.update_watson_config(cred.username,password,chat_server_version)
             return make_response(render_template('bootstrap_index.html'), 200, headers)
         else:
             if (cred.username == "" or cred.password == ""):
