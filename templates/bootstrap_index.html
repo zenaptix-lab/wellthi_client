@@ -13,27 +13,48 @@
 
         <!-- Bootstrap core CSS -->
         <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .watermark {
+                width: 300px;
+                height: 100px;
+                display: block;
+                position: relative;
+            }
+
+            .watermark::after {
+                content: "";
+                background:url(/static/Wellthi_banner-01.png);
+                opacity: 0.2;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                position: absolute;
+                z-index: -1;
+            }
+        </style>
 
     </head>
 
     <body>
 
-        <div class="container">
-            <div class="row">
-                <form action="/index" method="post">
-                    <div class="form-group">
-                        <label for="IBM username">Username:</label>
-                        <input type="text" class="form-control" id="IBM_username" placeholder="username" name="username">
-                    </div>
-                    <div class="form-group">
-                        <label for="IBM_password">Password:</label>
-                        <input type="password" class="form-control" id="IBM_password" placeholder="password" name="password">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
+        <div class="container-fluid">
+            <div class="watermark">
+                <div class="row-fluid">
+                    <form action="/index" method="post">
+                        <div class="form-group">
+                            <label for="IBM username">Username:</label>
+                            <input type="text" class="form-control" id="IBM_username" placeholder="username" name="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="IBM_password">Password:</label>
+                            <input type="password" class="form-control" id="IBM_password" placeholder="password" name="password">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
-
 
         <div class="container">
             <div class="row">
