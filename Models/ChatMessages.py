@@ -17,13 +17,14 @@ class MessageHelpers(Watson_Config):
 
     # @classmethod
     def post_message(self, workspace_id, message):
+        formatted_msg = ' '.join(message.split())
         response = self.assistant.message(
             workspace_id=workspace_id,
             input={
-                'text': message
+                'text': formatted_msg
             }
         ).get_result()
-        # return json.dumps(response)
+        #return json.dumps(response,indent=2)
         return response['output']['text'][0]
 
 
