@@ -8,7 +8,7 @@ $ sudo pip2 install virtualenv
 
 To initialize python virtual environment run : 
 ```
-$ virtualenv -p /usr/bin/python2.7 wellthi_client
+$ virtualenv -p /usr/bin/python2.7 .../wellthi_client/venv
 ```
 
 To activate virtual environment run :
