@@ -5,11 +5,18 @@ import json
 from jinja2 import Template
 from Models.Credentials import *
 from Models.ChatMessages import *
+import os
+import pandas as pd
+from hrv.filters import moving_average
+import numpy as np
+from hrv.classical import frequency_domain
 
 app = Flask(__name__)  # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
+known_files = [".DS_STORE"]
+path_load = "/Users/mouritsdebeer/Desktop/watchme/" # "/path/to/listen/folder"
 
 print("Starting web server")
 
@@ -17,6 +24,42 @@ print("Starting web server")
 @app.route('/')
 def helloWorld():
     return "Hello world!!!"
+
+
+@app.route('/load')
+def detectFiles():
+    files = os.listdir(path_load)
+    for f in files:
+        if f not in known_files:
+            print("let's go! Read file: " + f)
+            data = pd.read_csv(path_load + f, header=None)
+            known_files.append(f)
+            data[1].replace('B', 1, inplace=True)
+            data[1].replace(' ', 0, inplace=True)
+            # convert the B's, which indicate heart beats, to 1
+
+            beat_indices = []
+            for i in range(0, len(data[1])):
+                if data[1][i] == 1:
+                    beat_indices.append(data[0][i])
+                    data[1][i+1] = 0
+            # remove the second B
+
+            rr = []
+            for i in range(1, len(beat_indices)):
+                rrint = 1000.0 * (beat_indices[i] - beat_indices[i-1]) / 60.0
+                rr.append(rrint)
+            # the rr intervals
+
+            # filt_rri = moving_average(np.array(rr), order = 3)
+
+            # toPrint = np.array2string(np.array(rr))
+
+            #Frequency domain
+            toPrint = str(frequency_domain(rri=rr, fs=4.0, method='welch', interp_method='cubic', detrend='linear'))
+
+            return toPrint
+    return "Okay, no new files"
 
 
 @app.route('/hello', methods=['GET', 'POST'])
