@@ -5,6 +5,7 @@ import json
 from jinja2 import Template
 from Models.Credentials import *
 from Models.ChatMessages import *
+from Models.RedisConf import *
 import sys
 
 app = Flask(__name__)  # Initiate app
@@ -14,6 +15,16 @@ cred = Credentials("", "")
 chat_server_version = '2018-09-20'
 chat_server = MessageHelpers(cred.username,cred.password,chat_server_version)
 digital_ocean_endpoint = ""
+
+
+def my_handler(message):
+    print 'MY HANDLER: ', message['data']
+
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
+p = r.pubsub(ignore_subscribe_messages=True)
+p.subscribe(**{'stressed_event': my_handler})
+p.run_in_thread(sleep_time=1)
+
 
 print("Starting web server")
 
