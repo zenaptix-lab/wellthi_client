@@ -15,10 +15,39 @@ app = Flask(__name__)  # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
-known_files = [".DS_STORE"]
+known_files = [".DS_Store"]
 path_load = "/Users/mouritsdebeer/Desktop/watchme/" # "/path/to/listen/folder"
 
 print("Starting web server")
+
+
+def getRRIntervals(data):
+    data[1].replace('B', 1, inplace=True)
+    data[1].replace(' ', 0, inplace=True)
+    # convert the B's, which indicate heart beats, to 1
+
+    beat_indices = []
+    for i in range(0, len(data[1])):
+        if data[1][i] == 1:
+            beat_indices.append(data[0][i])
+            data[1][i+1] = 0
+    # remove the second B
+
+    rr = []
+    for i in range(1, len(beat_indices)):
+        rr.append(1000.0 * (beat_indices[i] - beat_indices[i-1]) / 60.0)
+    # the rr intervals
+    return rr
+
+
+# Process the time domain parameters of HRV from the RR-intervals
+def getHRV_TimeDomain(rr_intervals):
+    return rr_intervals
+
+
+# Process the frequency domain parameters of HRV from the RR-intervals
+def getHRV_FreqDomain(rr_intervals):
+    return frequency_domain(rri=rr_intervals, fs=4.0, method='welch', interp_method='cubic', detrend='linear')
 
 
 @app.route('/')
@@ -34,31 +63,17 @@ def detectFiles():
             print("let's go! Read file: " + f)
             data = pd.read_csv(path_load + f, header=None)
             known_files.append(f)
-            data[1].replace('B', 1, inplace=True)
-            data[1].replace(' ', 0, inplace=True)
-            # convert the B's, which indicate heart beats, to 1
 
-            beat_indices = []
-            for i in range(0, len(data[1])):
-                if data[1][i] == 1:
-                    beat_indices.append(data[0][i])
-                    data[1][i+1] = 0
-            # remove the second B
-
-            rr = []
-            for i in range(1, len(beat_indices)):
-                rrint = 1000.0 * (beat_indices[i] - beat_indices[i-1]) / 60.0
-                rr.append(rrint)
-            # the rr intervals
-
-            # filt_rri = moving_average(np.array(rr), order = 3)
-
+            rr = getRRIntervals(data)
             # toPrint = np.array2string(np.array(rr))
 
             #Frequency domain
-            toPrint = str(frequency_domain(rri=rr, fs=4.0, method='welch', interp_method='cubic', detrend='linear'))
+            toPrint = json.dumps(getHRV_FreqDomain(rr))
 
-            return toPrint
+            #post result to
+            r = requests.post('http://0.0.0.0:5000/hello', headers={'content-type': 'application/json'}, data=toPrint)
+            print("responce to request: ", r)
+            #return r.json
     return "Okay, no new files"
 
 
@@ -66,13 +81,10 @@ def detectFiles():
 def helloPost():
     if request.method == 'POST':
         json_data = request.get_json()
-        email = json_data['email']
-        password = json_data['password']
-        payload = {"email": email,
-                   "password": password}
-        return jsonify(json.dumps(payload))
+        print("$$$$$$$$$$$$$$ :"+str(jsonify(json.dumps(json_data))))
+        return jsonify(json_data)
     else:
-        return jsonify("{'hello' : 'world'}")
+        return jsonify(json.dumps(request.get_json()))
 
 
 @app.route('/test')
