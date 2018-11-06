@@ -22,3 +22,9 @@ $ pip install -r requirements.txt
 $ FLASK_APP=wellthi.py flask run --host=0.0.0.0
 ```
 
+For demo purposes :
+```
+$ docker build -t wellthi_client .
+$ docker run -it -p 5000:5000 wellthi_client:latest
+```
+

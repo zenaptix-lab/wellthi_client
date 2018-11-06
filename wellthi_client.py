@@ -5,6 +5,7 @@ import json
 from jinja2 import Template
 from Models.Credentials import *
 from Models.ChatMessages import *
+import sys
 
 app = Flask(__name__)  # Initiate app
 Bootstrap(app)
@@ -12,9 +13,15 @@ app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
 chat_server_version = '2018-09-20'
 chat_server = MessageHelpers(cred.username,cred.password,chat_server_version)
+digital_ocean_endpoint = ""
 
 print("Starting web server")
 
+@app.route('/server-endpoint/<url>')
+def show_user_profile(url):
+    # show the user profile for that user
+    digital_ocean_endpoint = str(url)
+    return 'User %s' % url
 
 @app.route('/')
 def helloWorld():
@@ -83,4 +90,4 @@ def indexPage():
                 return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200, headers)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False,host="0.0.0.0")
