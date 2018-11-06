@@ -9,48 +9,58 @@
         <meta name="author" content="">
         <link rel="icon" href="../../favicon.ico">
 
-        <title>Client App Homepage</title>
+        <title>Chat bot homepage</title>
 
         <!-- Bootstrap core CSS -->
         <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="../static/css/watermark.css" rel="stylesheet">
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col"></div>
-                <div class="col">
-                    <form action="/index" method="post">
-                        <div class="form-group">
-                            <label for="IBM username">Username:</label>
-                            <input type="text" class="form-control" id="IBM_username" placeholder="username" name="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="IBM_password">Password:</label>
-                            <input type="password" class="form-control" id="IBM_password" placeholder="password" name="password">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>
-                </div>
-                <div class="col"></div>
-            </div>
-        </div>
 
     </head>
 
     <body>
-        <img class="bg" src="/static/Wellthi_banner-01.png" />
+
+        <div class="container">
+            <div class="row">
+                <h2>Conversation</h2>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">
+                    <form action="/index" method="post">
+                        <textarea name="chat_bot_text"></textarea>
+                        <input type="submit" class="btn btn-default" value="post">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg">
+                    <form>
+                        <div class="form-group">
+                            <label for="comment">The form below contains a textarea for the chat bot conversation</label>
+                            <textarea class="form-control form-control-lg" rows="10" id="comment" readonly="readonly">
+                                {{chat_message}}
+                            </textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Example row of columns -->
+            <footer>
+                <p>&copy; zenAptix 2018</p>
+            </footer>
+        </div> <!-- /container -->
+
+
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="../static/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
     </body>
-
-    <footer>
-        <div class="container">
-            <p>&copy; zenAptix 2018</p>
-        </div>
-    </footer>
 </html>
 
 <!--{% extends "bootstrap/base.html" %}-->

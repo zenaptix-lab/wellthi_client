@@ -1,18 +1,14 @@
-.watermark {
-    width: 300px;
-    height: 100px;
-    display: block;
-    position: relative;
+.bg
+{
+    position: absolute;
+    width: 100%;
+    z-index: 0;
 }
 
-.watermark::after {
-    content: "";
-    background:url(https://www.google.co.in/images/srpr/logo11w.png);
-    opacity: 0.2;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: -1;
+.content
+{
+    margin: 0 auto;
+    position: relative;
+    width: 500px;
+    z-index: 999;
 }

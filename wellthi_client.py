@@ -68,7 +68,7 @@ def indexPage():
             password = request.form['password']
             cred.update(username, password)
             chat_server.update_watson_config(cred.username,password,chat_server_version)
-            return make_response(render_template('bootstrap_index.html'), 200, headers)
+            return make_response(render_template('bootstrap_chat_index.html'), 200, headers)
         else:
             if (cred.username == "" or cred.password == ""):
                 print("please enter a username and password")
@@ -77,10 +77,10 @@ def indexPage():
                 message = request.form['chat_bot_text']
                 response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d',message)
                 system_context = chat_server.chat_context['system']
-                if 'branch_exited_reason' in system_context:
-                    return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
-                else:
-                    return make_response(render_template('bootstrap_index.html', chat_message=response), 200, headers)
+                # if 'branch_exited_reason' in system_context:
+                #     return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
+                # else:
+                return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200, headers)
 
 if __name__ == '__main__':
     app.run()
