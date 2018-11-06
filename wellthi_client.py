@@ -19,9 +19,8 @@ print("Starting web server")
 
 @app.route('/server-endpoint/<url>')
 def show_user_profile(url):
-    # show the user profile for that user
     digital_ocean_endpoint = str(url)
-    return 'User %s' % url
+    return 'You have chosen to configure remote endpoint as %s' % url
 
 @app.route('/')
 def helloWorld():
