@@ -20,10 +20,13 @@ digital_ocean_endpoint = ""
 def my_handler(message):
     print 'MY HANDLER: ', message['data']
 
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
-p = r.pubsub(ignore_subscribe_messages=True)
-p.subscribe(**{'stressed_event': my_handler})
-p.run_in_thread(sleep_time=1)
+try :
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    p = r.pubsub(ignore_subscribe_messages=True)
+    p.subscribe(**{'stressed_event': my_handler})
+    p.run_in_thread(sleep_time=1)
+except:
+    print("Redis not connected !!!!!!!!!!!!!")
 
 
 print("Starting web server")
