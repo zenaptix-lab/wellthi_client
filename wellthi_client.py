@@ -16,18 +16,7 @@ chat_server_version = '2018-09-20'
 chat_server = MessageHelpers(cred.username,cred.password,chat_server_version)
 digital_ocean_endpoint = ""
 
-
-def my_handler(message):
-    print 'MY HANDLER: ', message['data']
-
-try :
-    r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    p = r.pubsub(ignore_subscribe_messages=True)
-    p.subscribe(**{'stressed_event': my_handler})
-    p.run_in_thread(sleep_time=1)
-except:
-    print("Redis not connected !!!!!!!!!!!!!")
-
+RedisConf(host='localhost', port=6379, db=0).connectRedis('stressed_event','happy_event')
 
 print("Starting web server")
 
