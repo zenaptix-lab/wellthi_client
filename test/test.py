@@ -17,7 +17,7 @@ if __name__ == '__main__':
     #
     # print(json.dumps(response, indent=2))
 
-    chat_server = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48","FUWYZmMJmjGF",'2018-09-20')
+    chat_server = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48","chat_bot_page",'2018-09-20')
 
     ############## chat interaction 1
     print("chat_context BEFORE POST : " , chat_server.chat_context)

@@ -2,6 +2,9 @@ __author__ = 'rikus'
 
 import time
 import redis
+from flask import render_template, make_response
+import requests
+import json
 
 
 # class RedisConf(object):
@@ -19,12 +22,17 @@ import redis
 
 class RedisConf(object):
     def __init__(self, host, port=6379, db=0):
+        self.events = []
         self.host = host
         self.port = port
         self.db = db
 
     def my_handler(self, message):
-        print 'MY HANDLER: ', message['data']
+        message_data = message['data']
+        print 'MY HANDLER: ', message_data
+        if message_data == "stressed":
+            print 'MY HANDLER inside : ', message_data
+            self.events.append(message_data)
 
     def connectRedis(self, *events):
         try:

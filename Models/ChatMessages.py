@@ -19,7 +19,6 @@ class MessageHelpers(Watson_Config):
     def update_watson_config(self,username, password, version):
         Watson_Config.__init__(self, username, password, version)
 
-    # @classmethod
     def post_message(self, workspace_id, message):
         formatted_msg = ' '.join(message.split())
         response = self.assistant.message(

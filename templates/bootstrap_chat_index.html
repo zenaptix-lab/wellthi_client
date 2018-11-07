@@ -13,10 +13,19 @@
 
         <!-- Bootstrap core CSS -->
         <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     </head>
 
     <body>
+
+    <script>
+        setInterval(function(){
+            console.log( $( "#content" ).load("http://localhost:5000/events"));
+            $('#bot_chat_area').load('http://localhost:5000/events');
+        }, 5000) /* time in milliseconds */
+
+    </script>
 
         <div class="container">
             <div class="row">
@@ -36,7 +45,7 @@
             <div class="row">
                 <div class="col-lg">
                     <form>
-                        <div class="form-group">
+                        <div class="form-group" id="bot_chat_area">
                             <label for="comment">The form below contains a textarea for the chat bot conversation</label>
                             <textarea class="form-control form-control-lg" rows="10" id="comment" readonly="readonly">
                                 {{chat_message}}
@@ -58,7 +67,7 @@
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="../static/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
     </body>
 </html>
