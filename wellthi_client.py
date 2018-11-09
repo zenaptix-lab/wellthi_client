@@ -98,8 +98,8 @@ def chat_bot():
         print ("chat bot response : " , response)
         redis_conf.events = []
         return make_response(render_template('bootstrap_chat_area.html', chat_message=response), 200, headers)
-    # else:
-    #     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+    else:
+        return ('', 200)
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
