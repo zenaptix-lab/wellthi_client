@@ -91,8 +91,15 @@ def wellthi_break():
 
 @app.route('/chat_bot_page')
 def chat_bot():
-    headers = {'Content-Type': 'text/html'}
-    return make_response(render_template('bootstrap_chat_index.html'), 200, headers)
+    print("redis events lenghts : " , redis_conf.events)
+    if len(redis_conf.events) > 0:
+        headers = {'Content-Type': 'text/html'}
+        response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', redis_conf.events[0])
+        print ("chat bot response : " , response)
+        redis_conf.events = []
+        return make_response(render_template('bootstrap_chat_area.html', chat_message=response), 200, headers)
+    # else:
+    #     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():

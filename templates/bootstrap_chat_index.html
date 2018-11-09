@@ -21,8 +21,15 @@
 
     <script>
         setInterval(function(){
-            console.log( $( "#content" ).load("http://localhost:5000/events"));
-            $('#bot_chat_area').load('http://localhost:5000/events');
+
+            $.get( "http://localhost:5000/events", function( data ) {
+                console.log("data " , data);
+                if (data.includes("stressed")) {
+                    console.log("data includes stressed " , data);
+                    $("#bot_chat_area").load("http://localhost:5000/chat_bot_page", data);
+                }
+            });
+
         }, 5000) /* time in milliseconds */
 
     </script>
