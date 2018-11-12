@@ -26,7 +26,10 @@
                     </iframe>
                 </div>
                 <div id="chatbot_redirect">
-                    <a class="btn btn-large btn-info" href="/index">Back to chat bot</a>
+                    <form action="/return_to_chatbot" method="get">
+                        <button name="chat_bot_redirect" value="Back to chat bot">Back to chat bot</button>
+                    </form>
+{#                    <a class="btn btn-large btn-info" href="/index" type="submit">Back to chat bot</a>#}
                 </div>
             </div>
         </div>

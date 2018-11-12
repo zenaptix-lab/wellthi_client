@@ -102,6 +102,14 @@ def chat_bot():
     else:
         return ('', 200)
 
+@app.route('/return_to_chatbot', methods=['GET'])
+def return_to_chatbot():
+    headers = {'Content-Type': 'text/html'}
+    if (cred.username == "" or cred.password == ""):
+        return make_response(render_template('bootstrap_index.html'), 200, headers)
+    else:
+        return make_response(render_template('bootstrap_chat_index.html', chat_message="Welcome back"), 200,
+                             headers)
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
@@ -131,10 +139,16 @@ def indexPage():
                 message = request.form['chat_bot_text']
                 response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
                 system_context = chat_server.chat_context['system']
-                # if 'branch_exited_reason' in system_context:
-                #     return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
-                # else:
-                return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200, headers)
+                if 'branch_exited_reason' in system_context:
+                    if "wellthi break" in str(response).lower():
+                        print("EXIT chat bot session")
+                        return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
+                    else:
+                        return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
+                                             headers)
+                else:
+                    return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
+                                         headers)
 
 
 if __name__ == '__main__':

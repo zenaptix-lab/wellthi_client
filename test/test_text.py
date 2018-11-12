@@ -22,3 +22,8 @@ if __name__ == '__main__':
     oneTwo = onetwo(1,2)
     print(oneTwo.one)
 
+    str_1 = "All I Want is to parTy"
+    assert ("Want" in str) == False
+    assert ("want" in str_1.lower()) == True
+
+
