@@ -29,7 +29,7 @@ digital_ocean_endpoint = ""
 
 redis_conf = RedisConf(host='localhost', port=6379, db=0)
 redis_instance = redis_conf.connectRedis('stressed_event',
-                        'happy_event')
+                                         'happy_event')
 
 print("Starting web server")
 
@@ -53,6 +53,7 @@ def helloWorld():
 @app.route('/events')
 def getEvents():
     return json.dumps(redis_conf.events)
+
 
 @app.route('/hello', methods=['GET', 'POST'])
 def helloPost():
@@ -91,15 +92,16 @@ def wellthi_break():
 
 @app.route('/chat_bot_page')
 def chat_bot():
-    print("redis events lenghts : " , redis_conf.events)
+    print("redis events lenghts : ", redis_conf.events)
     if len(redis_conf.events) > 0:
         headers = {'Content-Type': 'text/html'}
         response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', redis_conf.events[0])
-        print ("chat bot response : " , response)
+        print ("chat bot response : ", response)
         redis_conf.events = []
         return make_response(render_template('bootstrap_chat_area.html', chat_message=response), 200, headers)
     else:
         return ('', 200)
+
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
@@ -115,7 +117,12 @@ def indexPage():
             password = request.form['password']
             cred.update(username, password)
             chat_server.update_watson_config(cred.username, password, chat_server_version)
-            return make_response(render_template('bootstrap_chat_index.html'), 200, headers)
+            valid_response = cred.check_password(chat_server)
+
+            if str(valid_response) == "valid":
+                return make_response(render_template('bootstrap_chat_index.html'), 200, headers)
+            else:
+                return make_response(render_template('bootstrap_index.html'), 200, headers)
         else:
             if (cred.username == "" or cred.password == ""):
                 print("please enter a username and password")
