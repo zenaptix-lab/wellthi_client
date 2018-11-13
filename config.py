@@ -1,6 +1,6 @@
 FILE_DROP_CONFIG = {
     'known_files': [".DS_Store"],
-    'path_load': "/Users/mouritsdebeer/Desktop/watchme/",  # "/path/to/listen/folder"
+    'path_load': "/home/rikus/Desktop/test/",  # "/path/to/listen/folder/"
     'user_id': "mourits",
     'file_timestamp': 1541515173
 }

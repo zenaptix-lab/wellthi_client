@@ -143,15 +143,15 @@ def helloWorld():
 
 @app.route('/load')
 def detectFiles():
-    files = os.listdir(config.FILE_DROP_CONFIG.path_load)
+    files = os.listdir(config.FILE_DROP_CONFIG['path_load'])
     for f in files:
         if f not in known_files:
             print("let's go! Read file: " + f)
             data = pd.read_csv(path_load + f, header=None)
             known_files.append(f)
 
-            user_id = config.FILE_DROP_CONFIG.user_id
-            file_timestamp = config.FILE_DROP_CONFIG.file_timestamp
+            user_id = config.FILE_DROP_CONFIG['user_id']
+            file_timestamp = config.FILE_DROP_CONFIG['file_timestamp']
 
             rr = getRRIntervals(data)
             # toPrint = np.array2string(np.array(rr))
