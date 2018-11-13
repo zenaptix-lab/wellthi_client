@@ -12,6 +12,7 @@ from hrv.filters import moving_average
 import numpy as np
 from hrv.classical import frequency_domain, time_domain
 from Models.RedisConf import RedisConf
+import config
 
 import sys
 
@@ -28,20 +29,17 @@ app = create_app()
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
-known_files = [".DS_Store"]
-path_load = "/Users/mouritsdebeer/Desktop/watchme/"  # "/path/to/listen/folder"
-chat_server_version = '2018-09-20'
+known_files = config.FILE_DROP_CONFIG['known_files']
+path_load = config.FILE_DROP_CONFIG['path_load']
+chat_server_version = config.CHAT_BOT_CONFIG['chat_server_version']
 chat_server = MessageHelpers(cred.username, cred.password, chat_server_version)
 digital_ocean_endpoint = ""
 
-redis_conf = RedisConf(host='localhost', port=6379, db=0)
-redis_instance = redis_conf.connectRedis('stressed_event',
-                                         'happy_event')
+redis_conf = RedisConf(config.REDIS_CONFIG['host'], config.REDIS_CONFIG['port'], config.REDIS_CONFIG['db'])
+redis_instance = redis_conf.connectRedis(config.REDIS_CONFIG['events'])
 
 print("Starting web server")
-
-print ("events ", redis_conf)
-
+print ("Redis subscribed to events : ", redis_conf.events)
 
 @app.route('/server-endpoint/<url>')
 def show_user_profile(url):
@@ -145,15 +143,15 @@ def helloWorld():
 
 @app.route('/load')
 def detectFiles():
-    files = os.listdir(path_load)
+    files = os.listdir(config.FILE_DROP_CONFIG.path_load)
     for f in files:
         if f not in known_files:
             print("let's go! Read file: " + f)
             data = pd.read_csv(path_load + f, header=None)
             known_files.append(f)
 
-            user_id = "mourits"
-            file_timestamp = 1541515173
+            user_id = config.FILE_DROP_CONFIG.user_id
+            file_timestamp = config.FILE_DROP_CONFIG.file_timestamp
 
             rr = getRRIntervals(data)
             # toPrint = np.array2string(np.array(rr))
@@ -185,7 +183,6 @@ def detectFiles():
                     toPrint.append(result)
                     # print(getHRV_FreqDomain(rr_sample))  # send result
                     # print(getHRV_TimeDomain(rr_sample))
-
 
             # Frequency domain
             # toPrint = json.dumps(getHRV_FreqDomain(rr))
@@ -247,6 +244,7 @@ def chat_bot():
     else:
         return ('', 200)
 
+
 @app.route('/return_to_chatbot', methods=['GET'])
 def return_to_chatbot():
     headers = {'Content-Type': 'text/html'}
@@ -255,6 +253,7 @@ def return_to_chatbot():
     else:
         return make_response(render_template('bootstrap_chat_index.html', chat_message="Welcome back"), 200,
                              headers)
+
 
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
