@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template, helpers, send_from_directory, make_response, session
+from flask import Flask, request, jsonify, render_template, helpers, send_from_directory, make_response, session, \
+    Response
 from flask_bootstrap import Bootstrap
 import requests
 import json
@@ -10,15 +11,42 @@ import pandas as pd
 from hrv.filters import moving_average
 import numpy as np
 from hrv.classical import frequency_domain, time_domain
+from Models.RedisConf import RedisConf
 
-app = Flask(__name__)  # Initiate app
+import sys
+
+
+def create_app():
+    app_instance = Flask(__name__)
+    from Models.RedisConf import RedisConf
+    # redis_conf = RedisConf(host='localhost', port=6379, db=0).connectRedis('stressed_event',
+    #                                                                        'happy_event')
+    return app_instance
+
+
+app = create_app()
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
 known_files = [".DS_Store"]
 path_load = "/Users/mouritsdebeer/Desktop/watchme/"  # "/path/to/listen/folder"
+chat_server_version = '2018-09-20'
+chat_server = MessageHelpers(cred.username, cred.password, chat_server_version)
+digital_ocean_endpoint = ""
+
+redis_conf = RedisConf(host='localhost', port=6379, db=0)
+redis_instance = redis_conf.connectRedis('stressed_event',
+                                         'happy_event')
 
 print("Starting web server")
+
+print ("events ", redis_conf)
+
+
+@app.route('/server-endpoint/<url>')
+def show_user_profile(url):
+    digital_ocean_endpoint = str(url)
+    return 'You have chosen to configure remote endpoint as %s' % url
 
 
 def getRRIntervals(data):
@@ -109,6 +137,9 @@ def evaluateStress(rr_sample):
 
 @app.route('/')
 def helloWorld():
+    # print redis_instance.events
+    print chat_server_version
+    print redis_conf.events
     return "Hello world!!!"
 
 
@@ -167,6 +198,11 @@ def detectFiles():
     return "Okay, no new files"
 
 
+@app.route('/events')
+def getEvents():
+    return json.dumps(redis_conf.events)
+
+
 @app.route('/hello', methods=['GET', 'POST'])
 def helloPost():
     if request.method == 'POST':
@@ -193,6 +229,33 @@ def getResource(resource_name):
     return send_from_directory('static', resource_name)
 
 
+@app.route('/wellthi_break')
+def wellthi_break():
+    headers = {'Content-Type': 'text/html'}
+    return make_response(render_template('wellthi_break.html'), 200, headers)
+
+
+@app.route('/chat_bot_page')
+def chat_bot():
+    print("redis events lenghts : ", redis_conf.events)
+    if len(redis_conf.events) > 0:
+        headers = {'Content-Type': 'text/html'}
+        response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', redis_conf.events[0])
+        print ("chat bot response : ", response)
+        redis_conf.events = []
+        return make_response(render_template('bootstrap_chat_area.html', chat_message=response), 200, headers)
+    else:
+        return ('', 200)
+
+@app.route('/return_to_chatbot', methods=['GET'])
+def return_to_chatbot():
+    headers = {'Content-Type': 'text/html'}
+    if (cred.username == "" or cred.password == ""):
+        return make_response(render_template('bootstrap_index.html'), 200, headers)
+    else:
+        return make_response(render_template('bootstrap_chat_index.html', chat_message="Welcome back"), 200,
+                             headers)
+
 @app.route('/index', methods=['POST', 'GET'])
 def indexPage():
     error = None
@@ -206,7 +269,13 @@ def indexPage():
             username = request.form['username']
             password = request.form['password']
             cred.update(username, password)
-            return make_response(render_template('bootstrap_index.html'), 200, headers)
+            chat_server.update_watson_config(cred.username, password, chat_server_version)
+            valid_response = cred.check_password(chat_server)
+
+            if str(valid_response) == "valid":
+                return make_response(render_template('bootstrap_chat_index.html'), 200, headers)
+            else:
+                return make_response(render_template('bootstrap_index.html'), 200, headers)
         else:
             if (cred.username == "" or cred.password == ""):
                 print("please enter a username and password")
@@ -216,7 +285,19 @@ def indexPage():
                 response = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48", "FUWYZmMJmjGF",
                                           '2018-09-20').post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
                 return make_response(render_template('bootstrap_index.html', chat_message=response), 200, headers)
+                response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
+                system_context = chat_server.chat_context['system']
+                if 'branch_exited_reason' in system_context:
+                    if "wellthi break" in str(response).lower():
+                        print("EXIT chat bot session")
+                        return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
+                    else:
+                        return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
+                                             headers)
+                else:
+                    return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
+                                         headers)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False, host="0.0.0.0")

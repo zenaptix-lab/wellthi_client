@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+
+        <title>Chat bot homepage</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    </head>
+
+    <body>
+
+    <script>
+        setInterval(function(){
+
+            $.get( "http://localhost:5000/events", function( data ) {
+                console.log("data " , data);
+                if (data.includes("stressed")) {
+                    console.log("data includes stressed " , data);
+                    $("#bot_chat_area").load("http://localhost:5000/chat_bot_page", data);
+                }
+            });
+
+        }, 5000) /* time in milliseconds */
+
+    </script>
+
+        <div class="container">
+            <div class="row">
+                <h2>Conversation</h2>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">
+                    <form action="/index" method="post">
+                        <textarea name="chat_bot_text"></textarea>
+                        <input type="submit" class="btn btn-default" value="post">
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg">
+                    <form>
+                        <div class="form-group" id="bot_chat_area">
+                            <label for="comment">The form below contains a textarea for the chat bot conversation</label>
+                            <textarea class="form-control form-control-lg" rows="10" id="comment" readonly="readonly">
+                                {{chat_message}}
+                            </textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Example row of columns -->
+            <footer>
+                <p>&copy; zenAptix 2018</p>
+            </footer>
+        </div> <!-- /container -->
+
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="../static/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+    </body>
+</html>
+
+<!--{% extends "bootstrap/base.html" %}-->
+<!--{% block title %}This is an example page{% endblock title %}-->
+
+<!--{% block main %}-->
+    <!--<h2>This is a child template.</h2>-->
+    <!--{% endblock main %}-->

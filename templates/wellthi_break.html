@@ -9,36 +9,38 @@
         <meta name="author" content="">
         <link rel="icon" href="../../favicon.ico">
 
-        <title>Client App Homepage</title>
+        <title>Wellthi break</title>
 
         <!-- Bootstrap core CSS -->
         <link href="../static/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="../static/css/watermark.css" rel="stylesheet">
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col"></div>
-                <div class="col">
-                    <form action="/index" method="post">
-                        <div class="form-group">
-                            <label for="IBM username">Username:</label>
-                            <input type="text" class="form-control" id="IBM_username" placeholder="username" name="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="IBM_password">Password:</label>
-                            <input type="password" class="form-control" id="IBM_password" placeholder="password" name="password">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>
-                </div>
-                <div class="col"></div>
-            </div>
-        </div>
 
     </head>
 
     <body>
-        <img class="bg" src="/static/Wellthi_banner-01.png" />
+
+        <div class="container">
+            <div class="row">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/ExVb7aRVeLU" frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    </iframe>
+                </div>
+                <div id="chatbot_redirect">
+                    <form action="/return_to_chatbot" method="get">
+                        <button name="chat_bot_redirect" value="Back to chat bot">Back to chat bot</button>
+                    </form>
+{#                    <a class="btn btn-large btn-info" href="/index" type="submit">Back to chat bot</a>#}
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Example row of columns -->
+            <footer>
+                <p>&copy; zenAptix 2018</p>
+            </footer>
+        </div> <!-- /container -->
+
 
         <!-- Bootstrap core JavaScript
         ================================================== -->
