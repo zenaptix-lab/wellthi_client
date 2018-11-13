@@ -281,8 +281,7 @@ def indexPage():
                 return make_response(render_template('bootstrap_index.html'), 200, headers)
             else:  # post message
                 message = request.form['chat_bot_text']
-                response = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48", "FUWYZmMJmjGF",
-                                          '2018-09-20').post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
+                response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
                 system_context = chat_server.chat_context['system']
                 if 'branch_exited_reason' in system_context:
                     if "wellthi break" in str(response).lower():
