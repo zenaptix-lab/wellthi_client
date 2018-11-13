@@ -13,3 +13,6 @@ REDIS_CONFIG = {
     'db': 0,
     'events': ['stressed_event', 'happy_event']
 }
+WELLTHI_SERVER_CONFIG = {
+    'biometric_data_endpoint' : 'http://0.0.0.0:5000/hello'
+}

@@ -41,6 +41,7 @@ redis_instance = redis_conf.connectRedis(config.REDIS_CONFIG['events'])
 print("Starting web server")
 print ("Redis subscribed to events : ", redis_conf.events)
 
+
 @app.route('/server-endpoint/<url>')
 def show_user_profile(url):
     digital_ocean_endpoint = str(url)
@@ -187,11 +188,13 @@ def detectFiles():
             # Frequency domain
             # toPrint = json.dumps(getHRV_FreqDomain(rr))
 
-            # post result to
-            # r = requests.post('http://0.0.0.0:5000/hello', headers={'content-type': 'application/json'}, data=toPrint)
-            # print("responce to request: ", r)
+            for variables in toPrint:
+                # print str(variables)
+                r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'], headers={'content-type': 'application/json'},
+                                  data=json.dumps(variables))
+                print "responce to request: ", r
+            return json.dumps(toPrint)
 
-            return str(toPrint)
     return "Okay, no new files"
 
 
@@ -204,7 +207,7 @@ def getEvents():
 def helloPost():
     if request.method == 'POST':
         json_data = request.get_json()
-        print("$$$$$$$$$$$$$$ :" + str(jsonify(json.dumps(json_data))))
+        print("Sent JSON DATA :" , json.dumps(json_data))
         return jsonify(json_data)
     else:
         return jsonify(json.dumps(request.get_json()))
