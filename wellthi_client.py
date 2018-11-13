@@ -9,45 +9,102 @@ import os
 import pandas as pd
 from hrv.filters import moving_average
 import numpy as np
-from hrv.classical import frequency_domain
+from hrv.classical import frequency_domain, time_domain
 
 app = Flask(__name__)  # Initiate app
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
 known_files = [".DS_Store"]
-path_load = "/Users/mouritsdebeer/Desktop/watchme/" # "/path/to/listen/folder"
+path_load = "/Users/mouritsdebeer/Desktop/watchme/"  # "/path/to/listen/folder"
 
 print("Starting web server")
 
 
 def getRRIntervals(data):
-    data[1].replace('B', 1, inplace=True)
-    data[1].replace(' ', 0, inplace=True)
-    # convert the B's, which indicate heart beats, to 1
+    # data is read from the csv, and the 2nd column indicates when heart beats occurred with a 'B'
 
-    beat_indices = []
-    for i in range(0, len(data[1])):
-        if data[1][i] == 1:
-            beat_indices.append(data[0][i])
-            data[1][i+1] = 0
-    # remove the second B
+    # Select heartbeats column
+    beats = data.loc[:, 1] == 'B'
 
-    rr = []
-    for i in range(1, len(beat_indices)):
-        rr.append(1000.0 * (beat_indices[i] - beat_indices[i-1]) / 60.0)
-    # the rr intervals
+    # get the index numbers of when "beats" column is    True
+    beat_indices_orig = list(beats[beats].index)
+
+    # shift index numbers by 1
+    beat_indices_shifted = [x + 1 for x in beat_indices_orig]
+
+    # take the difference between original and shifted beats. This removes consecutive beats in original data
+    beat_indices = list(set(beat_indices_orig) - set(beat_indices_shifted))
+    beat_indices.sort()
+
+    # Now process RR-intervals (difference in time between beats):
+    rr_indices = [t - s for s, t in zip(beat_indices, beat_indices[1:])]
+    # This takes the difference between consecutive elements in a list (gets number of samples between beats)
+
+    # There are 60 samples per second, so translate above into milliseconds between beats (RR intervals):
+    rr = [i * 1000 / 60.0 for i in rr_indices]
     return rr
 
 
 # Process the time domain parameters of HRV from the RR-intervals
 def getHRV_TimeDomain(rr_intervals):
-    return rr_intervals
+    return time_domain(rr_intervals)
 
 
 # Process the frequency domain parameters of HRV from the RR-intervals
 def getHRV_FreqDomain(rr_intervals):
     return frequency_domain(rri=rr_intervals, fs=4.0, method='welch', interp_method='cubic', detrend='linear')
+
+
+def evaluateStress(rr_sample):
+    s1 = 0  # light indicator of stress
+    s2 = 0  # hard indicator of stress
+
+    # Time domain indicators:
+    timeDomain = getHRV_TimeDomain(rr_sample)
+
+    rr_mean = np.mean(rr_sample)
+    if rr_mean < 640:
+        s2 = s2 + 1
+    else:
+        if rr_mean < 780: s1 = s1 + 1
+
+    sdnn = timeDomain["sdnn"]
+    if sdnn < 20:
+        s2 = s2 + 1
+    else:
+        if sdnn < 40: s1 = s1 + 1
+
+    rmssd = timeDomain["rmssd"]
+    if rmssd < 16: s2 = s2 + 1
+
+    # Time domain indicators:
+    freqDomain = getHRV_FreqDomain(rr_sample)
+
+    hf = freqDomain["hf"]
+    if hf < 465:
+        s2 = s2 + 1
+    else:
+        if hf < 700: s1 = s1 + 1
+
+    vlf = freqDomain["vlf"]
+    if vlf < 200:
+        s2 = s2 + 1
+    else:
+        if vlf < 300: s1 = s1 + 1
+
+    lf_hf = freqDomain["lf_hf"]
+    if lf_hf > 4:
+        s2 = s2 + 1
+    else:
+        if lf_hf > 2.5: s1 = s1 + 1
+
+    #  Summarise result into a binary indicator. If s2 >= 1, or if s1 >= 2, then stressed:
+    stressed = 1 if (s2 >= 1) or (s1 >= 2) else 0
+
+    result = {'status': stressed, 'val1': rr_mean, 'val2': sdnn, 'val3': rmssd, 'val4': hf, 'val5': vlf, 'val6': lf_hf}
+
+    return result
 
 
 @app.route('/')
@@ -64,16 +121,49 @@ def detectFiles():
             data = pd.read_csv(path_load + f, header=None)
             known_files.append(f)
 
+            user_id = "mourits"
+            file_timestamp = 1541515173
+
             rr = getRRIntervals(data)
             # toPrint = np.array2string(np.array(rr))
 
-            #Frequency domain
-            toPrint = json.dumps(getHRV_FreqDomain(rr))
+            # Group rr into 2 minute intervals
+            rr_sum = np.cumsum(rr)
+            print(rr_sum)
 
-            #post result to
-            r = requests.post('http://0.0.0.0:5000/hello', headers={'content-type': 'application/json'}, data=toPrint)
-            print("responce to request: ", r)
-            #return r.json
+            sample_size = 150000  # milliseconds
+
+            # the last element of the cumulative sum of rr is equal to the total duration of the recording.
+            # We want to group the rr values by 2.5 minutes, so that the parameters can be generated for each group
+            print(range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size))
+
+            toPrint = []
+
+            for i in range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size):
+                rr_sum_subset = [(i <= s) and (s < (i + 1) * sample_size) for s in rr_sum]
+                rr_temp = np.array(rr)
+                rr_sample = list(rr_temp[rr_sum_subset])
+                if len(rr_sample) > 80:  # Let's require at least 80 rr's to process, in case last group only has a few
+                    result = evaluateStress(rr_sample)
+
+                    result['id'] = user_id
+                    result['from'] = file_timestamp + i / 1000
+                    result['to'] = file_timestamp + (i + sample_size) / 1000
+
+                    print(result)
+                    toPrint.append(result)
+                    # print(getHRV_FreqDomain(rr_sample))  # send result
+                    # print(getHRV_TimeDomain(rr_sample))
+
+
+            # Frequency domain
+            # toPrint = json.dumps(getHRV_FreqDomain(rr))
+
+            # post result to
+            # r = requests.post('http://0.0.0.0:5000/hello', headers={'content-type': 'application/json'}, data=toPrint)
+            # print("responce to request: ", r)
+
+            return str(toPrint)
     return "Okay, no new files"
 
 
@@ -81,7 +171,7 @@ def detectFiles():
 def helloPost():
     if request.method == 'POST':
         json_data = request.get_json()
-        print("$$$$$$$$$$$$$$ :"+str(jsonify(json.dumps(json_data))))
+        print("$$$$$$$$$$$$$$ :" + str(jsonify(json.dumps(json_data))))
         return jsonify(json_data)
     else:
         return jsonify(json.dumps(request.get_json()))
@@ -124,7 +214,7 @@ def indexPage():
             else:  # post message
                 message = request.form['chat_bot_text']
                 response = MessageHelpers("d01d68b2-3864-4401-a26d-92b10ef74e48", "FUWYZmMJmjGF",
-                                          '2018-09-20').post_message('953d25b4-9170-47e5-b465-fc513f60ce1d',message )
+                                          '2018-09-20').post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
                 return make_response(render_template('bootstrap_index.html', chat_message=response), 200, headers)
 
 
