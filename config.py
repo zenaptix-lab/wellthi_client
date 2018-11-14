@@ -14,5 +14,5 @@ REDIS_CONFIG = {
     'events': ['stressed_event', 'happy_event']
 }
 WELLTHI_SERVER_CONFIG = {
-    'biometric_data_endpoint' : 'http://0.0.0.0:5000/hello'
+    'biometric_data_endpoint' : 'http://0.0.0.0:8080/biometric/'
 }

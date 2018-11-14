@@ -190,7 +190,8 @@ def detectFiles():
 
             for variables in toPrint:
                 # print str(variables)
-                r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'], headers={'content-type': 'application/json'},
+                r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'] + user_id,
+                                  headers={'content-type': 'application/json'},
                                   data=json.dumps(variables))
                 print "responce to request: ", r
             return json.dumps(toPrint)
@@ -207,7 +208,7 @@ def getEvents():
 def helloPost():
     if request.method == 'POST':
         json_data = request.get_json()
-        print("Sent JSON DATA :" , json.dumps(json_data))
+        print("Sent JSON DATA :", json.dumps(json_data))
         return jsonify(json_data)
     else:
         return jsonify(json.dumps(request.get_json()))
