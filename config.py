@@ -11,7 +11,7 @@ REDIS_CONFIG = {
     'host': 'localhost',
     'port': 6379,
     'db': 0,
-    'events': ['stressed_event', 'happy_event']
+    'events': ['ian', 'mourits']
 }
 WELLTHI_SERVER_CONFIG = {
     'biometric_data_endpoint' : 'http://0.0.0.0:8080/biometric/'

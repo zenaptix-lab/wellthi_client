@@ -14,9 +14,9 @@ class RedisConf(object):
         self.db = db
 
     def my_handler(self, message):
-        message_data = message['data']
+        message_data = str(message['data']).lower()
         print 'MY HANDLER: ', message_data
-        if message_data == "stressed":
+        if "stressed" in message_data:
             print 'MY HANDLER inside : ', message_data
             self.events.append(message_data)
 
