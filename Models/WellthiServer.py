@@ -2,8 +2,6 @@ __author__ = 'rikus'
 import json
 
 
-# (id: String, at: Long, mental: Int, physical: Int, negativeEmotions: Int, physicalSymptoms: Int)
-
 class Biometric(object):
     def __init__(self, user_id, from_id, to, status, val1, val2, val3, val4, val5, val6):
         self.id = user_id
@@ -19,7 +17,6 @@ class Biometric(object):
 
     @classmethod
     def encode(self, jsonString):
-
         try:
             parsed_json = json.loads(jsonString)
             # print(parsed_json['id'])
@@ -34,7 +31,37 @@ class Biometric(object):
 
     def decode(self):
         data_dic = self.__dict__
-        data_dic['from'] = data_dic['from_id']
+        data_dic['from'] = data_dic[
+            'from_id']  # from is a reserved keyword, hence using from_id but server expects from
         del data_dic['from_id']
+        data = json.dumps(data_dic)
+        return data
+
+
+class Assessment(object):
+    def __init__(self, user_id, at, mental, physical, negative_emotions, physical_symptoms):
+        self.id = user_id
+        self.at = at
+        self.mental = mental
+        self.physical = physical
+        self.negativeEmotions = negative_emotions
+        self.physicalSymptoms = physical_symptoms
+
+    @classmethod
+    def encode(self, jsonString):
+        try:
+            parsed_json = json.loads(jsonString)
+            # print(parsed_json['id'])
+            if 'id' and 'at' and 'mental' and 'physical' and 'negativeEmotions' and 'physicalSymptoms':
+                obj = Assessment(str(parsed_json['id']), parsed_json['at'], parsed_json['mental'],
+                                 parsed_json['physical'], parsed_json['negativeEmotions'],
+                                 parsed_json['physicalSymptoms'])
+
+                return obj
+        except:
+            raise Exception('does not contain all variables needed')
+
+    def decode(self):
+        data_dic = self.__dict__
         data = json.dumps(data_dic)
         return data
