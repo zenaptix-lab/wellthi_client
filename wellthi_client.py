@@ -12,6 +12,7 @@ from hrv.filters import moving_average
 import numpy as np
 from hrv.classical import frequency_domain, time_domain
 from Models.RedisConf import RedisConf
+from Models.WellthiServer import *
 import config
 
 import sys
@@ -167,8 +168,6 @@ def detectFiles():
             # We want to group the rr values by 2.5 minutes, so that the parameters can be generated for each group
             print(range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size))
 
-            toPrint = []
-
             for i in range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size):
                 rr_sum_subset = [(i <= s) and (s < (i + 1) * sample_size) for s in rr_sum]
                 rr_temp = np.array(rr)
@@ -180,21 +179,16 @@ def detectFiles():
                     result['from'] = file_timestamp + i / 1000
                     result['to'] = file_timestamp + (i + sample_size) / 1000
 
-                    print(result)
-                    toPrint.append(result)
-                    # print(getHRV_FreqDomain(rr_sample))  # send result
-                    # print(getHRV_TimeDomain(rr_sample))
+                    bio_obj = Biometric(result['id'], result['from'], result['to'], result['status'], result['val1'],
+                                        result['val2'], result['val3'], result['val4'], result['val5'], result['val6'])
 
-            # Frequency domain
-            # toPrint = json.dumps(getHRV_FreqDomain(rr))
+                    formatted_bio = bio_obj.decode()
+                    r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'] + user_id,
+                                      headers={'content-type': 'application/json'},
+                                      data=formatted_bio)
+                    print "responce to request: ", r
 
-            for variables in toPrint:
-                # print str(variables)
-                r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'] + user_id,
-                                  headers={'content-type': 'application/json'},
-                                  data=json.dumps(variables))
-                print "responce to request: ", r
-            return json.dumps(toPrint)
+            return "finished processing files"
 
     return "Okay, no new files"
 
