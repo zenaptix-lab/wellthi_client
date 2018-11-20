@@ -1,6 +1,8 @@
 from Models.ChatMessages import *
 import json
 import watson_developer_cloud
+import arrow
+import operator
 
 if __name__ == '__main__':
     # assistant = watson_developer_cloud.AssistantV1(
@@ -72,5 +74,9 @@ if __name__ == '__main__':
         entity_info = chat_server.assistant.get_entity('953d25b4-9170-47e5-b465-fc513f60ce1d', entity_ref)
         # print(entity_info)
 
-    log_events = chat_server.assistant.list_logs('953d25b4-9170-47e5-b465-fc513f60ce1d', request_timestamp="2018-11-14T00:00:00.000Z")
-    print(log_events)
+    # log_events = chat_server.assistant.list_logs('953d25b4-9170-47e5-b465-fc513f60ce1d', "-request_timestamp",
+    #                                              MessageHelpers.time_window())
+    print(
+        "=============================================================logs=============================================================")
+    current_chats = MessageHelpers.get_current_chat(chat_server,'953d25b4-9170-47e5-b465-fc513f60ce1d')
+    print(json.dumps(current_chats,indent=2))

@@ -39,3 +39,21 @@ if __name__ == '__main__':
     jsonDIC = json.loads(json_string)
     print("jsonDIC ", jsonDIC)
 
+    test_dic = {}
+
+    test_dic["1"] = ["2018-11-21"]
+    test_dic["1"].append(["2017-11-24"])
+
+    test_dic["2"] = ["2018-11-22"]
+    test_dic["2"].append(["2017-11-23"])
+
+    test_dic["3"] = ["2018-11-23"]
+    test_dic["3"].append(["2017-11-22"])
+
+    test_dic["4"] = ["2018-11-24"]
+    test_dic["4"].append(["2017-11-21"])
+    print test_dic
+
+    import operator
+    print("items : ", test_dic.values())
+    print sorted(test_dic.values(),key=operator.itemgetter(1))
