@@ -79,4 +79,5 @@ if __name__ == '__main__':
     print(
         "=============================================================logs=============================================================")
     current_chats = MessageHelpers.get_current_chat(chat_server,'953d25b4-9170-47e5-b465-fc513f60ce1d')
+    print(current_chats)
     print(json.dumps(current_chats,indent=2))

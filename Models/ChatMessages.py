@@ -65,8 +65,8 @@ class MessageHelpers(Watson_Config):
                 else:
                     current_chat[conversation_id] = [timestamp, request['input'], intents]
 
-        return sorted(current_chat.values(), key=operator.itemgetter(0), reverse=True)
-
+        # return sorted(current_chat.values(), key=operator.itemgetter(0), reverse=True)
+        return current_chat
 
 class Greetings(object):
     def __init__(self):
