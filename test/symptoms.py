@@ -21,4 +21,6 @@ if __name__ == '__main__':
             print("###########################################", emotion)
         return enum_value
 
+    
     print(encode(user_symptons))
+
