@@ -3,6 +3,7 @@ import json
 import watson_developer_cloud
 import arrow
 import operator
+import array
 
 if __name__ == '__main__':
     # assistant = watson_developer_cloud.AssistantV1(
@@ -78,6 +79,11 @@ if __name__ == '__main__':
     #                                              MessageHelpers.time_window())
     print(
         "=============================================================logs=============================================================")
-    current_chats = MessageHelpers.get_current_chat(chat_server,'953d25b4-9170-47e5-b465-fc513f60ce1d')
+    current_chats = MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')
     print(current_chats)
-    print(json.dumps(current_chats,indent=2))
+    print(json.dumps(current_chats, indent=2))
+
+    todays_chat = current_chats['57bc4200-8a28-4b01-884a-04b03d93edd7']
+    print todays_chat
+    for chat in todays_chat:
+        print [chat]
