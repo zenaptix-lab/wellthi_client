@@ -36,14 +36,14 @@ class MessageHelpers(Watson_Config):
         return response['output']['text'][0]
 
     @classmethod
-    def time_window(self):
+    def time_window(cls):
         today = arrow.now().format('YYYY-MM-DD')
         today_index = str(today).split("-")
         tomorrow = today_index[0] + "-" + today_index[1] + "-" + str(int(today_index[2]) + 1)
         return "response_timestamp>=" + today + "," + "response_timestamp<" + tomorrow
 
     @classmethod
-    def get_current_chat(self, chat_server, workspace_id):
+    def get_today_chats(cls, chat_server, workspace_id):
         current_chat = {}
         log_events = chat_server.assistant.list_logs(workspace_id, "-request_timestamp",
                                                      MessageHelpers.time_window())
@@ -63,10 +63,11 @@ class MessageHelpers(Watson_Config):
                     current_chat[conversation_id].append([timestamp, request['input'], intents])
 
                 else:
-                    current_chat[conversation_id] = [timestamp, request['input'], intents]
+                    current_chat[conversation_id] = [[timestamp, request['input'], intents]]
 
         # return sorted(current_chat.values(), key=operator.itemgetter(0), reverse=True)
         return current_chat
+
 
 class Greetings(object):
     def __init__(self):
