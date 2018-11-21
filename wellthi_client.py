@@ -7,22 +7,14 @@ from jinja2 import Template
 from Models.Credentials import *
 from Models.ChatMessages import *
 import os
-import pandas as pd
-from hrv.filters import moving_average
-import numpy as np
-from hrv.classical import frequency_domain, time_domain
 from Models.RedisConf import RedisConf
 from Models.WellthiServer import *
 import config
-
 import sys
 
 
 def create_app():
     app_instance = Flask(__name__)
-    from Models.RedisConf import RedisConf
-    # redis_conf = RedisConf(host='localhost', port=6379, db=0).connectRedis('stressed_event',
-    #                                                                        'happy_event')
     return app_instance
 
 
@@ -30,8 +22,6 @@ app = create_app()
 Bootstrap(app)
 app.jinja_env.add_extension('jinja2.ext.do')
 cred = Credentials("", "")
-known_files = config.FILE_DROP_CONFIG['known_files']
-path_load = config.FILE_DROP_CONFIG['path_load']
 chat_server_version = config.CHAT_BOT_CONFIG['chat_server_version']
 chat_server = MessageHelpers(cred.username, cred.password, chat_server_version)
 digital_ocean_endpoint = ""
@@ -49,92 +39,6 @@ def show_user_profile(url):
     return 'You have chosen to configure remote endpoint as %s' % url
 
 
-def getRRIntervals(data):
-    # data is read from the csv, and the 2nd column indicates when heart beats occurred with a 'B'
-
-    # Select heartbeats column
-    beats = data.loc[:, 1] == 'B'
-
-    # get the index numbers of when "beats" column is    True
-    beat_indices_orig = list(beats[beats].index)
-
-    # shift index numbers by 1
-    beat_indices_shifted = [x + 1 for x in beat_indices_orig]
-
-    # take the difference between original and shifted beats. This removes consecutive beats in original data
-    beat_indices = list(set(beat_indices_orig) - set(beat_indices_shifted))
-    beat_indices.sort()
-
-    # Now process RR-intervals (difference in time between beats):
-    rr_indices = [t - s for s, t in zip(beat_indices, beat_indices[1:])]
-    # This takes the difference between consecutive elements in a list (gets number of samples between beats)
-
-    # There are 60 samples per second, so translate above into milliseconds between beats (RR intervals):
-    rr = [i * 1000 / 60.0 for i in rr_indices]
-    return rr
-
-
-# Process the time domain parameters of HRV from the RR-intervals
-def getHRV_TimeDomain(rr_intervals):
-    return time_domain(rr_intervals)
-
-
-# Process the frequency domain parameters of HRV from the RR-intervals
-def getHRV_FreqDomain(rr_intervals):
-    return frequency_domain(rri=rr_intervals, fs=4.0, method='welch', interp_method='cubic', detrend='linear')
-
-
-def evaluateStress(rr_sample):
-    s1 = 0  # light indicator of stress
-    s2 = 0  # hard indicator of stress
-
-    # Time domain indicators:
-    timeDomain = getHRV_TimeDomain(rr_sample)
-
-    rr_mean = np.mean(rr_sample)
-    if rr_mean < 640:
-        s2 = s2 + 1
-    else:
-        if rr_mean < 780: s1 = s1 + 1
-
-    sdnn = timeDomain["sdnn"]
-    if sdnn < 20:
-        s2 = s2 + 1
-    else:
-        if sdnn < 40: s1 = s1 + 1
-
-    rmssd = timeDomain["rmssd"]
-    if rmssd < 16: s2 = s2 + 1
-
-    # Time domain indicators:
-    freqDomain = getHRV_FreqDomain(rr_sample)
-
-    hf = freqDomain["hf"]
-    if hf < 465:
-        s2 = s2 + 1
-    else:
-        if hf < 700: s1 = s1 + 1
-
-    vlf = freqDomain["vlf"]
-    if vlf < 200:
-        s2 = s2 + 1
-    else:
-        if vlf < 300: s1 = s1 + 1
-
-    lf_hf = freqDomain["lf_hf"]
-    if lf_hf > 4:
-        s2 = s2 + 1
-    else:
-        if lf_hf > 2.5: s1 = s1 + 1
-
-    #  Summarise result into a binary indicator. If s2 >= 1, or if s1 >= 2, then stressed:
-    stressed = 1 if (s2 >= 1) or (s1 >= 2) else 0
-
-    result = {'status': stressed, 'val1': rr_mean, 'val2': sdnn, 'val3': rmssd, 'val4': hf, 'val5': vlf, 'val6': lf_hf}
-
-    return result
-
-
 @app.route('/')
 def helloWorld():
     # print redis_instance.events
@@ -145,52 +49,7 @@ def helloWorld():
 
 @app.route('/load')
 def detectFiles():
-    files = os.listdir(config.FILE_DROP_CONFIG['path_load'])
-    for f in files:
-        if f not in known_files:
-            print("let's go! Read file: " + f)
-            data = pd.read_csv(path_load + f, header=None)
-            known_files.append(f)
-
-            user_id = config.FILE_DROP_CONFIG['user_id']
-            file_timestamp = config.FILE_DROP_CONFIG['file_timestamp']
-
-            rr = getRRIntervals(data)
-            # toPrint = np.array2string(np.array(rr))
-
-            # Group rr into 2 minute intervals
-            rr_sum = np.cumsum(rr)
-            print(rr_sum)
-
-            sample_size = 150000  # milliseconds
-
-            # the last element of the cumulative sum of rr is equal to the total duration of the recording.
-            # We want to group the rr values by 2.5 minutes, so that the parameters can be generated for each group
-            print(range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size))
-
-            for i in range(0, int(rr_sum[len(rr_sum) - 1].item()), sample_size):
-                rr_sum_subset = [(i <= s) and (s < (i + 1) * sample_size) for s in rr_sum]
-                rr_temp = np.array(rr)
-                rr_sample = list(rr_temp[rr_sum_subset])
-                if len(rr_sample) > 80:  # Let's require at least 80 rr's to process, in case last group only has a few
-                    result = evaluateStress(rr_sample)
-
-                    result['id'] = user_id
-                    result['from'] = file_timestamp + i / 1000
-                    result['to'] = file_timestamp + (i + sample_size) / 1000
-
-                    bio_obj = Biometric(result['id'], result['from'], result['to'], result['status'], result['val1'],
-                                        result['val2'], result['val3'], result['val4'], result['val5'], result['val6'])
-
-                    formatted_bio = bio_obj.decode()
-                    r = requests.post(config.WELLTHI_SERVER_CONFIG['biometric_data_endpoint'] + user_id,
-                                      headers={'content-type': 'application/json'},
-                                      data=formatted_bio)
-                    print "responce to request: ", r
-
-            return "finished processing files"
-
-    return "Okay, no new files"
+    return Biometric.ingest_biometric_files()
 
 
 @app.route('/events')
@@ -284,6 +143,7 @@ def indexPage():
                 if 'branch_exited_reason' in system_context:
                     if "wellthi break" in str(response).lower():
                         print("EXIT chat bot session")
+                        # send evaluation
                         return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
                     else:
                         return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
