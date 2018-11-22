@@ -132,7 +132,7 @@ class Biometric(object):
         return result
 
     @classmethod
-    def ingest_biometric_files(cls):
+    def ingest_biometric_files(cls, user_id):
         known_files = config.FILE_DROP_CONFIG['known_files']
         path_load = config.FILE_DROP_CONFIG['path_load']
         files = os.listdir(path_load)
@@ -142,7 +142,7 @@ class Biometric(object):
                 data = pd.read_csv(path_load + f, header=None)
                 known_files.append(f)
 
-                user_id = config.FILE_DROP_CONFIG['user_id']
+                # user_id = config.FILE_DROP_CONFIG['user_id']
                 file_timestamp = config.FILE_DROP_CONFIG['file_timestamp']
 
                 rr = Biometric.getRRIntervals(data)
@@ -186,6 +186,26 @@ class Biometric(object):
         return "Okay, no new files"
 
 
+class Symptoms(object):
+    def __init__(self):
+        self.physical_symptoms = [
+            "NONE_OF_THE_ABOVE", "ACNE", "CONGESTION", "BURNING", "COLD", "DIZZY", "FATIGUE", "FEVER",
+            "BOWEL", "NAUSEA", "PAIN", "PALPITATIONS", "RASH", "SWEATING", "SWELLING"]
+        self.negative_emotions = [
+            "NONE_OF_THE_ABOVE", "ANGRY", "ANXIOUS", "ASHAMED", "BORED", "DISGUSTED", "DISTRACTED",
+            "FRUSTRATED", "HOSTILE", "HUMILIATED", "INSECURE", "SAD", "THREATENED"]
+
+    def encode(self, emotions):
+        enum_value = 0
+        for emotion in emotions:
+            for symp in self.physical_symptoms:
+                if emotion == symp:
+                    index = self.physical_symptoms.index(emotion)
+                    enum_value = enum_value + pow(2, index)
+            print("###########################################", emotion)
+        return enum_value
+
+
 class Assessment(object):
     def __init__(self, user_id, at, mental, physical, negative_emotions, physical_symptoms):
         self.id = user_id
@@ -213,3 +233,11 @@ class Assessment(object):
         data_dic = self.__dict__
         data = json.dumps(data_dic)
         return data
+
+    def post_assessment(self):
+        formatted_asses = self.decode()
+        r = requests.post(config.WELLTHI_SERVER_CONFIG['assessment_data_endpoint'] + self.id,
+                          headers={'content-type': 'application/json'},
+                          data=formatted_asses)
+
+        print "responce to request: ", r

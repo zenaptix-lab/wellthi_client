@@ -11,6 +11,8 @@ from Models.RedisConf import RedisConf
 from Models.WellthiServer import *
 import config
 import sys
+from dateutil.parser import parse
+import calendar
 
 
 def create_app():
@@ -28,6 +30,7 @@ digital_ocean_endpoint = ""
 
 redis_conf = RedisConf(config.REDIS_CONFIG['host'], config.REDIS_CONFIG['port'], config.REDIS_CONFIG['db'])
 redis_instance = redis_conf.connectRedis(config.REDIS_CONFIG['events'])
+symptoms = Symptoms()
 
 print("Starting web server")
 print ("Redis subscribed to events : ", redis_conf.events)
@@ -49,7 +52,7 @@ def helloWorld():
 
 @app.route('/load')
 def detectFiles():
-    return Biometric.ingest_biometric_files()
+    return Biometric.ingest_biometric_files(cred.username)
 
 
 @app.route('/events')
@@ -147,10 +150,36 @@ def indexPage():
                         todays_current_chat = \
                             MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
                                 conversation_id]
-                        # send evaluation
-                        # assessment = Assessment()
-                        assess = Assessment(userid,at,)
 
+                        print("todays current chat ", todays_current_chat)
+                        dt = parse(todays_current_chat[0][0])
+                        epoch = calendar.timegm(dt.timetuple())
+                        print("epoch :", epoch)
+
+                        mental = 0
+                        physical = 0
+                        neg_emotions = 0
+                        physical_symptoms = 0
+
+                        for chat in todays_current_chat:
+                            intent = str(chat[2][0]['intent']).lower()
+                            print ("Intent : " , intent)
+
+                            if "mental" in intent:
+                                mental = int(chat[1]['text'])
+
+                            if "physical" in intent:
+                                physical = int(chat[1]['text'])
+
+                            if str(intent).capitalize() in symptoms.negative_emotions:
+                                neg_emotions = symptoms.encode(intent)
+
+                            if str(intent).capitalize() in symptoms.physical_symptoms:
+                                physical_symptoms = symptoms.encode(intent)
+
+                        assess = Assessment(cred.username, epoch, mental, physical, neg_emotions, physical_symptoms)
+                        print(assess.decode())
+                        assess.post_assessment()
 
                         return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
                     else:
