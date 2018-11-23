@@ -7,6 +7,8 @@ import numpy as np
 import os
 import config
 import requests
+from dateutil.parser import parse
+import calendar
 
 
 class Biometric(object):
@@ -233,6 +235,43 @@ class Assessment(object):
         data_dic = self.__dict__
         data = json.dumps(data_dic)
         return data
+
+    @classmethod
+    def get_assessment(cls, cred, symptoms, todays_current_chat):
+        mental = 0
+        physical = 0
+        neg_emotions = 0
+        physical_symptoms = 0
+
+        dt = parse(todays_current_chat[0][0])
+        epoch = calendar.timegm(dt.timetuple())
+        print("epoch :", epoch)
+
+        for chat in todays_current_chat:
+            intent = str(chat[2][0]['intent']).lower()
+            print ("Intent : ", intent)
+
+            if str(intent).capitalize() in symptoms.negative_emotions:
+                neg_emotions = symptoms.encode(intent)
+
+            if str(intent).capitalize() in symptoms.physical_symptoms:
+                physical_symptoms = symptoms.encode(intent)
+
+            if "mental" in intent:
+                try:
+                    mental = int(chat[1]['text'])
+                except:
+                    print "mental not an int"
+
+            if "physical" in intent:
+                try:
+                    physical = int(chat[1]['text'])
+                except:
+                    print "physical not an int"
+
+
+
+        return Assessment(cred.username, epoch, mental, physical, neg_emotions, physical_symptoms)
 
     def post_assessment(self):
         formatted_asses = self.decode()

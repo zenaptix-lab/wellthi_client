@@ -152,32 +152,7 @@ def indexPage():
                                 conversation_id]
 
                         print("todays current chat ", todays_current_chat)
-                        dt = parse(todays_current_chat[0][0])
-                        epoch = calendar.timegm(dt.timetuple())
-                        print("epoch :", epoch)
-
-                        mental = 0
-                        physical = 0
-                        neg_emotions = 0
-                        physical_symptoms = 0
-
-                        for chat in todays_current_chat:
-                            intent = str(chat[2][0]['intent']).lower()
-                            print ("Intent : " , intent)
-
-                            if "mental" in intent:
-                                mental = int(chat[1]['text'])
-
-                            if "physical" in intent:
-                                physical = int(chat[1]['text'])
-
-                            if str(intent).capitalize() in symptoms.negative_emotions:
-                                neg_emotions = symptoms.encode(intent)
-
-                            if str(intent).capitalize() in symptoms.physical_symptoms:
-                                physical_symptoms = symptoms.encode(intent)
-
-                        assess = Assessment(cred.username, epoch, mental, physical, neg_emotions, physical_symptoms)
+                        assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
                         print(assess.decode())
                         assess.post_assessment()
 
