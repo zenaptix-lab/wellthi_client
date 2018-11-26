@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     ############## chat interaction 4
     print("chat_context BEFORE POST4 : ", chat_server.chat_context)
-    response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', "3")
+    response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', "m3")
     print("chat_context : ", chat_server.chat_context)
     print(response)
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     ############## chat interaction 6
     print("chat_context BEFORE POST6 : ", chat_server.chat_context)
-    response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', "9")
+    response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', "p9")
     end = chat_server.chat_context['system']
 
     if 'branch_exited_reason' in end:
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     print(current_chats)
     print(json.dumps(current_chats, indent=2))
 
-    todays_chat = current_chats['57bc4200-8a28-4b01-884a-04b03d93edd7']
+    todays_chat = current_chats['40fea31b-6755-4b69-97e4-3d520e09eecf']
     print todays_chat
     for chat in todays_chat:
         print [chat]

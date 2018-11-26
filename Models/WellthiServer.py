@@ -249,27 +249,29 @@ class Assessment(object):
 
         for chat in todays_current_chat:
             intent = str(chat[2][0]['intent']).lower()
+            chat_text = str(chat[1]['text']).upper()
             print ("Intent : ", intent)
+            print ("chat text : " + chat_text)
 
-            if str(intent).capitalize() in symptoms.negative_emotions:
-                neg_emotions = symptoms.encode(intent)
+            if chat_text in symptoms.negative_emotions:
+                print "NEGATIVE_EMOTIONS"
+                neg_emotions = symptoms.encode([chat_text])
 
-            if str(intent).capitalize() in symptoms.physical_symptoms:
-                physical_symptoms = symptoms.encode(intent)
+            if chat_text in symptoms.physical_symptoms:
+                print "NEGATIVE_PHYSICAL"
+                physical_symptoms = symptoms.encode([chat_text])
 
-            if "mental" in intent:
+            if "mental_rating" in intent:
                 try:
-                    mental = int(chat[1]['text'])
+                    mental = int(str(chat[1]['text'])[1:])
                 except:
                     print "mental not an int"
 
-            if "physical" in intent:
+            if "physical_rating" in intent:
                 try:
-                    physical = int(chat[1]['text'])
+                    physical = int(str(chat[1]['text'])[1:])
                 except:
                     print "physical not an int"
-
-
 
         return Assessment(cred.username, epoch, mental, physical, neg_emotions, physical_symptoms)
 

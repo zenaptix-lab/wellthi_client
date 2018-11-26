@@ -59,3 +59,6 @@ if __name__ == '__main__':
     print sorted(test_dic.values(),key=operator.itemgetter(1))
 
     print("Is" in str_1)
+
+    print("m3"[1:])
+

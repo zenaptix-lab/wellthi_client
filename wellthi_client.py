@@ -154,6 +154,7 @@ def indexPage():
                         print("todays current chat ", todays_current_chat)
                         assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
                         print(assess.decode())
+
                         assess.post_assessment()
 
                         return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
