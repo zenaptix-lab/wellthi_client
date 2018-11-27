@@ -200,10 +200,16 @@ class Symptoms(object):
     def encode(self, emotions):
         enum_value = 0
         for emotion in emotions:
-            for symp in self.physical_symptoms:
-                if emotion == symp:
-                    index = self.physical_symptoms.index(emotion)
-                    enum_value = enum_value + pow(2, index)
+            if emotion in self.physical_symptoms:
+                for symp in self.physical_symptoms:
+                    if emotion == symp:
+                        index = self.physical_symptoms.index(emotion)
+                        enum_value = enum_value + pow(2, index)
+            else:
+                for emot in self.negative_emotions:
+                    if emotion == emot:
+                        index = self.negative_emotions.index(emotion)
+                        enum_value = enum_value + pow(2, index)
             print("###########################################", emotion)
         return enum_value
 
