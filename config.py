@@ -8,12 +8,12 @@ CHAT_BOT_CONFIG = {
     'chat_server_version': '2018-09-20'
 }
 REDIS_CONFIG = {
-    'host': 'localhost',
+    'host': 'redis',
     'port': 6379,
     'db': 0,
     'events': ['ian', 'd01d68b2-3864-4401-a26d-92b10ef74e48']  # user id events sub
 }
 WELLTHI_SERVER_CONFIG = {
-    'biometric_data_endpoint': 'http://0.0.0.0:8080/biometric/',
-    'assessment_data_endpoint': 'http://0.0.0.0:8080/assessment/'
+    'biometric_data_endpoint': 'http://wellthi_server:8080/biometric/',
+    'assessment_data_endpoint': 'http://wellthi_server:8080/assessment/'
 }
