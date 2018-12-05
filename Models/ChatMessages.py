@@ -39,7 +39,11 @@ class MessageHelpers(Watson_Config):
     def time_window(cls):
         today = arrow.now().format('YYYY-MM-DD')
         today_index = str(today).split("-")
-        tomorrow = today_index[0] + "-" + today_index[1] + "-" + str(int(today_index[2]) + 1)
+        tomorrow_int = int(today_index[2]) + 1
+        if tomorrow_int <= 9:
+            tomorrow = today_index[0] + "-" + today_index[1] + "-" + "0" + str(int(today_index[2]) + 1)
+        else:
+            tomorrow = today_index[0] + "-" + today_index[1] + "-" + str(int(today_index[2]) + 1)
         return "response_timestamp>=" + today + "," + "response_timestamp<" + tomorrow
 
     @classmethod
