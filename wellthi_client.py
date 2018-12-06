@@ -110,14 +110,14 @@ def return_to_chatbot_page():
     print ("RETURN TO CHATBOT !!!!!!!!!!!!!!!!!")
 
     headers = {'Content-Type': 'text/html'}
-    # conversation_id = chat_server.chat_context['conversation_id']
-    # todays_current_chat = \
-    #     MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
-    #         conversation_id]
-    # print("todays current chat ", todays_current_chat)
-    # assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
-    # print(assess.decode())
-    # assess.post_assessment()
+    conversation_id = chat_server.chat_context['conversation_id']
+    todays_current_chat = \
+        MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
+            conversation_id]
+    print("todays current chat ", todays_current_chat)
+    assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
+    print(assess.decode())
+    assess.post_assessment()
     if (cred.username == "" or cred.password == ""):
         return make_response(render_template('bootstrap_index.html'), 200, headers)
     else:
@@ -156,17 +156,6 @@ def indexPage():
                 if 'branch_exited_reason' in system_context:
                     try:
                         if "wellthi break" in str(response).lower():
-                            conversation_id = chat_server.chat_context['conversation_id']
-                            todays_current_chat = \
-                                MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
-                                    conversation_id]
-
-                            print("todays current chat ", todays_current_chat)
-                            assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
-                            print(assess.decode())
-
-                            assess.post_assessment()
-
                             return make_response(render_template('wellthi_break.html', chat_message=response), 200,
                                                  headers)
                         else:
