@@ -107,8 +107,6 @@ def chat_bot():
 
 @app.route('/return_to_chatbot', methods=['GET'])
 def return_to_chatbot_page():
-    print ("RETURN TO CHATBOT !!!!!!!!!!!!!!!!!")
-
     headers = {'Content-Type': 'text/html'}
     conversation_id = chat_server.chat_context['conversation_id']
     todays_current_chat = \
@@ -156,6 +154,7 @@ def indexPage():
                 if 'branch_exited_reason' in system_context:
                     try:
                         if "wellthi break" in str(response).lower():
+                            
                             return make_response(render_template('wellthi_break.html', chat_message=response), 200,
                                                  headers)
                         else:
