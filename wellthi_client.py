@@ -156,7 +156,6 @@ def indexPage():
                 if 'branch_exited_reason' in system_context:
                     try:
                         if "wellthi break" in str(response).lower():
-                            print("EXIT chat bot session")
                             conversation_id = chat_server.chat_context['conversation_id']
                             todays_current_chat = \
                                 MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
