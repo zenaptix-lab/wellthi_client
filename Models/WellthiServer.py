@@ -254,33 +254,42 @@ class Assessment(object):
         print("epoch :", epoch)
 
         for chat in todays_current_chat:
-            try:
-                intent = str(chat[2][0]['intent']).lower()
-                chat_text = str(chat[1]['text']).upper()
-                print ("Intent : ", intent)
-                print ("chat text : " + chat_text)
+            if len(chat) > 0:
+                try:
+                    intent = str(chat[2][0]['intent']).lower()
+                    chat_text = str(chat[1]['text']).upper()
+                    print ("Intent : ", intent)
+                    print ("chat text : " + chat_text)
 
-                if chat_text in symptoms.negative_emotions:
-                    print "NEGATIVE_EMOTIONS"
-                    neg_emotions = symptoms.encode([chat_text])
+                    if chat_text in symptoms.negative_emotions:
+                        print "NEGATIVE_EMOTIONS"
+                        neg_emotions = symptoms.encode([chat_text])
+                    else:
+                        neg_emotions = 0
 
-                if chat_text in symptoms.physical_symptoms:
-                    print "NEGATIVE_PHYSICAL"
-                    physical_symptoms = symptoms.encode([chat_text])
+                    if chat_text in symptoms.physical_symptoms:
+                        print "NEGATIVE_PHYSICAL"
+                        physical_symptoms = symptoms.encode([chat_text])
+                    else:
+                        physical_symptoms = 0
 
-                if "mental_rating" in intent:
-                    try:
-                        mental = int(str(chat[1]['text'])[1:])
-                    except:
-                        print "mental not an int"
+                    if "mental_rating" in intent:
+                        try:
+                            mental = int(str(chat[1]['text'])[1:])
+                        except:
+                            print "mental not an int"
+                    else:
+                        mental = 0
 
-                if "physical_rating" in intent:
-                    try:
-                        physical = int(str(chat[1]['text'])[1:])
-                    except:
-                        print "physical not an int"
-            except:
-                print ("Could not post summary of chat ", chat)
+                    if "physical_rating" in intent:
+                        try:
+                            physical = int(str(chat[1]['text'])[1:])
+                        except:
+                            print "physical not an int"
+                    else:
+                        physical = 0
+                except:
+                    print ("Could not post summary of chat ", chat)
 
         return Assessment(cred.username, epoch, mental, physical, neg_emotions, physical_symptoms)
 

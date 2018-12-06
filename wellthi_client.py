@@ -106,7 +106,9 @@ def chat_bot():
 
 
 @app.route('/return_to_chatbot', methods=['GET'])
-def return_to_chatbot():
+def return_to_chatbot_page():
+    print ("RETURN TO CHATBOT !!!!!!!!!!!!!!!!!")
+
     headers = {'Content-Type': 'text/html'}
     conversation_id = chat_server.chat_context['conversation_id']
     todays_current_chat = \
@@ -152,22 +154,29 @@ def indexPage():
                 response = chat_server.post_message('953d25b4-9170-47e5-b465-fc513f60ce1d', message)
                 system_context = chat_server.chat_context['system']
                 if 'branch_exited_reason' in system_context:
-                    if "wellthi break" in str(response).lower():
-                        print("EXIT chat bot session")
-                        conversation_id = chat_server.chat_context['conversation_id']
-                        todays_current_chat = \
-                            MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
-                                conversation_id]
+                    try:
+                        if "wellthi break" in str(response).lower():
+                            print("EXIT chat bot session")
+                            conversation_id = chat_server.chat_context['conversation_id']
+                            todays_current_chat = \
+                                MessageHelpers.get_today_chats(chat_server, '953d25b4-9170-47e5-b465-fc513f60ce1d')[
+                                    conversation_id]
 
-                        print("todays current chat ", todays_current_chat)
-                        assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
-                        print(assess.decode())
+                            print("todays current chat ", todays_current_chat)
+                            assess = Assessment.get_assessment(cred, symptoms, todays_current_chat)
+                            print(assess.decode())
 
-                        assess.post_assessment()
+                            assess.post_assessment()
 
-                        return make_response(render_template('wellthi_break.html', chat_message=response), 200, headers)
-                    else:
-                        return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
+                            return make_response(render_template('wellthi_break.html', chat_message=response), 200,
+                                                 headers)
+                        else:
+                            return make_response(render_template('bootstrap_chat_index.html', chat_message=response),
+                                                 200,
+                                                 headers)
+                    except UnicodeEncodeError:
+                        return make_response(render_template('bootstrap_chat_index.html', chat_message="See you later"),
+                                             200,
                                              headers)
                 else:
                     return make_response(render_template('bootstrap_chat_index.html', chat_message=response), 200,
