@@ -12,5 +12,5 @@ if __name__ == '__main__':
                 "val5": 87613.41240988596, "val4": 45668.848724130075}"""
 
     bio_obj_2 = Biometric.encode(json_str2)
-    print(bio_obj_2.user_id)
+    print(bio_obj_2.id)
 
