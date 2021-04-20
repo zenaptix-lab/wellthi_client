@@ -29,7 +29,7 @@ pexpect==4.6.0
 pluggy==0.8.0
 polling==0.3.0
 ptyprocess==0.6.0
-py==1.7.0
+py==1.10.0
 pytest==3.10.0
 python-dateutil==2.7.5
 pytz==2018.7
